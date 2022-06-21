@@ -1,7 +1,6 @@
 package com.saechim.saechimlog.controller
 
 import com.saechim.saechimlog.response.ErrorResponse
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -10,8 +9,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 
 @RestControllerAdvice
 class ExceptionControllerAdvice {
-
-    val log: org.slf4j.Logger = LoggerFactory.getLogger(PostController::class.java)
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException::class)
