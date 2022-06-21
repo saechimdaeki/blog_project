@@ -43,8 +43,10 @@ internal class PostControllerTest(
         mockMvc.perform(post("/posts")
             .content("{\"title\": \"\",\"content\":\"내용입니다\"}")
             .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.title").isNotEmpty)
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.code").isNotEmpty.run { jsonPath("$.code").value("400") })
+            .andExpect(jsonPath("$.message").isNotEmpty.run { jsonPath("$.message").value("잘못된 요청입니다") })
+            .andExpect(jsonPath("$.validation.title").isNotEmpty)
             .andDo(print())
     }
 }

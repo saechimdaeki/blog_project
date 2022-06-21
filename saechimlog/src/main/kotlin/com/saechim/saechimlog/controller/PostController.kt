@@ -21,17 +21,9 @@ class PostController {
      */
 
     @PostMapping("/posts")
-    fun post(@RequestBody @Valid postCreate: PostCreate, bindingResult: BindingResult) : Map<String,String> {
+    fun post(@RequestBody @Valid postCreate: PostCreate) : Map<String,String> {
         log.info("postCreate 값: {}",postCreate.toString())
-        if(bindingResult.hasErrors()){
-            val fieldErrors = bindingResult.fieldErrors
-            val firstFieldError = fieldErrors[0]
-            val fieldName = firstFieldError.field
-            val errorMessage = firstFieldError.defaultMessage ?: "메세지 없어요"
-            val error = mutableMapOf<String,String>()
-            error[fieldName] = errorMessage
-            return error
-        }
+
         return mapOf()
     }
 
