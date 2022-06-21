@@ -1,5 +1,6 @@
 package com.saechim.saechimlog.request
 
+import com.saechim.saechimlog.domain.Post
 import javax.validation.constraints.NotBlank
 
 data class PostCreate(
@@ -8,4 +9,10 @@ data class PostCreate(
     val title:String,
 
     @field:NotBlank(message = "콘텐츠를 입력해주세요")
-    val content: String)
+    val content: String
+    ){
+    fun toPostEntity() = Post(
+        title = this.title,
+        content = this.content
+    )
+}

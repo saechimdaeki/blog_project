@@ -14,6 +14,6 @@ class PostService(
     val log: Logger = LoggerFactory.getLogger(PostService::class.java)
 
     fun write(postCreate: PostCreate){
-        postRepository.save(Post.createPost(postCreate))
+        postRepository.save(postCreate.toPostEntity())
     }
 }

@@ -19,13 +19,4 @@ class Post(
     @Lob
     var content : String,
 
-) {
-    companion object{
-        fun createPost(postCreate: PostCreate) : Post{
-            return Post(
-                title = postCreate.title,
-                content = postCreate.content
-            )
-        }
-    }
-}
+)
