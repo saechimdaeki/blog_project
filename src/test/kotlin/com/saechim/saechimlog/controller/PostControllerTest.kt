@@ -1,6 +1,7 @@
 package com.saechim.saechimlog.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.saechim.saechimlog.domain.Post
 import com.saechim.saechimlog.dto.PostCreate
 import com.saechim.saechimlog.repository.PostRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -13,7 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -35,11 +38,11 @@ internal class PostControllerTest(
     fun postTest() {
 
         val requestJson = objectMapper.writeValueAsString(PostCreate(title = "제목입니다", content = "내용입니다"))
-        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+        mockMvc.perform(post("/posts")
             .content(requestJson)
             .contentType(APPLICATION_JSON))
             .andExpect(status().isOk)
-            .andDo(MockMvcResultHandlers.print())
+            .andDo(print())
     }
 
 
@@ -50,7 +53,7 @@ internal class PostControllerTest(
 
         val requestJson = objectMapper.writeValueAsString(PostCreate(title = "", content = "내용입니다"))
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+        mockMvc.perform(post("/posts")
             .content(requestJson)
             .contentType(APPLICATION_JSON))
             .andExpect(status().isBadRequest)
@@ -61,7 +64,7 @@ internal class PostControllerTest(
                 .run { jsonPath("$.message")
                 .value("잘못된 요청입니다") })
             .andExpect(jsonPath("$.validation.title").isNotEmpty)
-            .andDo(MockMvcResultHandlers.print())
+            .andDo(print())
     }
 
 
@@ -72,11 +75,11 @@ internal class PostControllerTest(
         val requestJson = objectMapper.writeValueAsString(PostCreate(title = "제목입니다", content = "내용입니다"))
 
         //when
-        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+        mockMvc.perform(post("/posts")
             .content(requestJson)
             .contentType(APPLICATION_JSON))
             .andExpect(status().isOk)
-            .andDo(MockMvcResultHandlers.print())
+            .andDo(print())
 
         assertThat(postRepository.count()).isEqualTo(1)
 
@@ -85,5 +88,21 @@ internal class PostControllerTest(
         assertThat(post.title).isEqualTo("제목입니다")
         assertThat(post.content).isEqualTo("내용입니다")
         assertThat(post.title).isNotEqualTo("제목스")
+    }
+
+    @Test
+    @DisplayName("글 단건 조회")
+    fun `글 단건 조회 테스트`(){
+        //given
+        val post = Post(title = "foo", content = "bar")
+        postRepository.save(post)
+        //when
+        mockMvc.perform(get("/posts/{postId}",post.id)
+            .contentType(APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.title").value("foo"))
+            .andExpect(jsonPath("$.content").value("bar"))
+            .andDo(print())
+        //then
     }
 }
