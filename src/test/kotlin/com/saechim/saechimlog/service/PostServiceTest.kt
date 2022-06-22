@@ -63,4 +63,26 @@ internal class PostServiceTest(
         }
 
     }
+
+    @Test
+    @DisplayName("글 제목이 10글자 이상일 때 글 단건 조회 ")
+    fun `글 단건 조회 제목이 10글자 이상`(){
+
+        //given
+        val createPost = Post(title = "1234567891012345", content = "bar")
+        postRepository.save(createPost)
+
+
+
+        createPost.id?.let {
+            val post = postService.getPost(it)
+            assertThat(post).isNotNull
+            assertThat(post.title).isEqualTo("1234567891")
+            assertThat(post.content).isEqualTo("bar")
+
+        } ?: kotlin.run {
+            Assertions.fail("실패한 테스트 케이스입니다")
+        }
+
+    }
 }

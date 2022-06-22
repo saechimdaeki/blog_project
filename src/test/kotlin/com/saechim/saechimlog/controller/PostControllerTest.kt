@@ -103,6 +103,5 @@ internal class PostControllerTest(
             .andExpect(jsonPath("$.title").value("foo"))
             .andExpect(jsonPath("$.content").value("bar"))
             .andDo(print())
-        //then
     }
 }
