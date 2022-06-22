@@ -1,6 +1,6 @@
 package com.saechim.saechimlog.response
 
-data class ErrorResponse(
+class ErrorResponse(
     val code: String ,
     val message : String,
     val validation :MutableMap<String,String>

@@ -13,14 +13,7 @@ class ExceptionControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun invalidRequestHandler(e:MethodArgumentNotValidException): ErrorResponse{
-//        val fieldError = e.fieldError
-//        fieldError?.let {
-//            val field = fieldError.field
-//            val defaultMessage = fieldError.defaultMessage ?: "에러메세지 없음"
-//
-//            val errorResponse = ErrorResponse("400", "잘못된 요청입니다")
-//
-//        }
+
         val errorResponse = ErrorResponse("400", "잘못된 요청입니다", mutableMapOf())
         e.fieldErrors.forEach { fieldError ->
             errorResponse.addValidation(fieldError.field,

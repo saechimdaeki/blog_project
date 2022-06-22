@@ -1,6 +1,5 @@
 package com.saechim.saechimlog.domain
 
-import com.saechim.saechimlog.request.PostCreate
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType

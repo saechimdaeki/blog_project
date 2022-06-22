@@ -1,26 +1,28 @@
 package com.saechim.saechimlog.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.saechim.saechimlog.dto.PostCreate
 import com.saechim.saechimlog.repository.PostRepository
-import org.assertj.core.api.Assertions
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.MediaType
+import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @AutoConfigureMockMvc
 @SpringBootTest
 internal class PostControllerTest(
     @Autowired val mockMvc: MockMvc,
-    @Autowired val postRepository: PostRepository
+    @Autowired val postRepository: PostRepository,
+    @Autowired val objectMapper: ObjectMapper
 ) {
 
     @BeforeEach
@@ -31,9 +33,11 @@ internal class PostControllerTest(
     @Test
     @DisplayName("/posts post요청 테스트 컨트롤러")
     fun postTest() {
+
+        val requestJson = objectMapper.writeValueAsString(PostCreate(title = "제목입니다", content = "내용입니다"))
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
-            .content("{\"title\": \"제목입니다\",\"content\":\"내용입니다\"}")
-            .contentType(MediaType.APPLICATION_JSON))
+            .content(requestJson)
+            .contentType(APPLICATION_JSON))
             .andExpect(status().isOk)
             .andDo(MockMvcResultHandlers.print())
     }
@@ -43,15 +47,20 @@ internal class PostControllerTest(
     @Test
     @DisplayName("/posts 요청시 title 값은 필수")
     fun postTest2() {
+
+        val requestJson = objectMapper.writeValueAsString(PostCreate(title = "", content = "내용입니다"))
+
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
-            .content("{\"title\": \"\",\"content\":\"내용입니다\"}")
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.status().isBadRequest)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.code").isNotEmpty.run { MockMvcResultMatchers.jsonPath("$.code")
+            .content(requestJson)
+            .contentType(APPLICATION_JSON))
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.code").isNotEmpty
+                .run { jsonPath("$.code")
                 .value("400") })
-            .andExpect(MockMvcResultMatchers.jsonPath("$.message").isNotEmpty.run { MockMvcResultMatchers.jsonPath("$.message")
+            .andExpect(jsonPath("$.message").isNotEmpty
+                .run { jsonPath("$.message")
                 .value("잘못된 요청입니다") })
-            .andExpect(MockMvcResultMatchers.jsonPath("$.validation.title").isNotEmpty)
+            .andExpect(jsonPath("$.validation.title").isNotEmpty)
             .andDo(MockMvcResultHandlers.print())
     }
 
@@ -60,10 +69,12 @@ internal class PostControllerTest(
     @DisplayName("/posts 요청시 DB에 값이 저장된다")
     fun postTest3() {
 
+        val requestJson = objectMapper.writeValueAsString(PostCreate(title = "제목입니다", content = "내용입니다"))
+
         //when
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
-            .content("{\"title\": \"제목입니다\",\"content\":\"내용입니다\"}")
-            .contentType(MediaType.APPLICATION_JSON))
+            .content(requestJson)
+            .contentType(APPLICATION_JSON))
             .andExpect(status().isOk)
             .andDo(MockMvcResultHandlers.print())
 
