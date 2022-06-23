@@ -16,7 +16,6 @@ class PostCreate(
         content = this.content
     )
 }
-
 class PostResponse(
 
     val title: String,

@@ -5,6 +5,7 @@ import com.saechim.saechimlog.dto.PostResponse
 import com.saechim.saechimlog.service.PostService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder
 import org.springframework.hateoas.server.mvc.linkTo
@@ -22,6 +23,11 @@ class PostController(
 ) {
     private val log: Logger = LoggerFactory.getLogger(PostController::class.java)
 
+    /**
+     * /posts -> 글 전체 조회(검색 + 페이징)
+     * /posts/{postId} -> 글 한개만 조회
+     */
+
     @PostMapping("/posts")
     fun writePost(@RequestBody @Valid postCreate: PostCreate) : ResponseEntity<Any> {
         log.info("postCreate 값: {}",postCreate.toString())
@@ -32,15 +38,14 @@ class PostController(
         }.withSelfRel(),
             linkTo<PostController> {
                 WebMvcLinkBuilder.methodOn(PostController::class.java).getPost(write.id!!)
-            }.withRel("seeDetail")
+            }.withRel("seeDetail"),
+            linkTo<PostController> {
+                WebMvcLinkBuilder.methodOn(PostController::class.java).getList()
+            }.withRel("listInfo")
         )
         return ResponseEntity.ok(entityModel)
     }
 
-    /**
-     * /posts -> 글 전체 조회(검색 + 페이징)
-     * /posts/{postId} -> 글 한개만 조회
-     */
 
     @GetMapping("/posts/{postId}")
     fun getPost(@PathVariable postId : Long) : ResponseEntity<Any>{
@@ -48,6 +53,14 @@ class PostController(
             WebMvcLinkBuilder.methodOn(PostController::class.java).getPost(postId)
         }.withSelfRel())
         return ResponseEntity.ok(entityModel)
+    }
+
+    @GetMapping("/posts")
+    fun getList() : ResponseEntity<Any>{
+        val collectionModel = CollectionModel.of(postService.getList(), linkTo<PostController> {
+            WebMvcLinkBuilder.methodOn(PostController::class.java).getList()
+        }.withSelfRel())
+        return ResponseEntity.ok(collectionModel)
     }
 
 }

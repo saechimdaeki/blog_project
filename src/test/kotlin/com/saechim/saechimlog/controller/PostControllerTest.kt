@@ -5,6 +5,7 @@ import com.saechim.saechimlog.domain.Post
 import com.saechim.saechimlog.dto.PostCreate
 import com.saechim.saechimlog.repository.PostRepository
 import org.assertj.core.api.Assertions.assertThat
+import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -104,4 +105,32 @@ internal class PostControllerTest(
             .andExpect(jsonPath("$.content").value("bar"))
             .andDo(print())
     }
+
+    @Test
+    @DisplayName("글 여러건 조회")
+    fun `글 여러건 조회 테스트`(){
+        //given
+        val post = Post(title = "foo", content = "bar")
+
+        val post2 = Post(title = "foo2", content = "bar2")
+
+        postRepository.saveAll(listOf(post,post2))
+
+
+        //when
+        /*
+        *
+        * Hateoas CollectionModel을 사용한다는걸 간과하지말자
+        *   */
+        mockMvc.perform(get("/posts")
+            .contentType(APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$._embedded.postResponseList.length()",Matchers.`is`(2)))
+            .andExpect(jsonPath("$._embedded.postResponseList[0].title").value("foo"))
+            .andExpect(jsonPath("$._embedded.postResponseList[0].content").value("bar"))
+            .andExpect(jsonPath("$._embedded.postResponseList[1].title").value("foo2"))
+            .andExpect(jsonPath("$._embedded.postResponseList[1].content").value("bar2"))
+            .andDo(print())
+    }
+
 }

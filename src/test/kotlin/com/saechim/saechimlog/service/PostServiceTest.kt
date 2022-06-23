@@ -85,4 +85,22 @@ internal class PostServiceTest(
         }
 
     }
+
+    @Test
+    @DisplayName("글 여러건 조회")
+    fun `글 여러건 조회`(){
+
+        val createPost = Post(title = "foo", content = "bar")
+
+        val createPost2 = Post(title = "foo2", content = "bar2")
+        postRepository.saveAll(listOf(createPost,createPost2))
+        //when
+        val list = postService.getList()
+
+        //then
+        assertThat(list).isNotEmpty
+
+        assertThat(list.size).isEqualTo(2)
+
+    }
 }
