@@ -110,11 +110,10 @@ internal class PostControllerTest(
     @DisplayName("글 여러건 조회")
     fun `글 여러건 조회 테스트`(){
         //given
-        val post = Post(title = "foo", content = "bar")
+        val requestPosts = (0 until 30).map { Post(title = "saechim-$it", content = "content-$it") }
+            .toList()
 
-        val post2 = Post(title = "foo2", content = "bar2")
-
-        postRepository.saveAll(listOf(post,post2))
+        postRepository.saveAll(requestPosts)
 
 
         //when
@@ -122,14 +121,14 @@ internal class PostControllerTest(
         *
         * Hateoas CollectionModel을 사용한다는걸 간과하지말자
         *   */
-        mockMvc.perform(get("/posts")
+        mockMvc.perform(get("/posts?page=1&sort=id,desc")
             .contentType(APPLICATION_JSON))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$._embedded.postResponseList.length()",Matchers.`is`(2)))
-            .andExpect(jsonPath("$._embedded.postResponseList[0].title").value("foo"))
-            .andExpect(jsonPath("$._embedded.postResponseList[0].content").value("bar"))
-            .andExpect(jsonPath("$._embedded.postResponseList[1].title").value("foo2"))
-            .andExpect(jsonPath("$._embedded.postResponseList[1].content").value("bar2"))
+            .andExpect(jsonPath("$._embedded.postResponseList.length()",Matchers.`is`(5)))
+            .andExpect(jsonPath("$._embedded.postResponseList[0].title").value("saechim-29"))
+            .andExpect(jsonPath("$._embedded.postResponseList[0].content").value("content-29"))
+            .andExpect(jsonPath("$._embedded.postResponseList[1].title").value("saechim-28"))
+            .andExpect(jsonPath("$._embedded.postResponseList[1].content").value("content-28"))
             .andDo(print())
     }
 

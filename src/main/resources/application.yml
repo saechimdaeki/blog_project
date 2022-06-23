@@ -3,4 +3,9 @@ spring:
     console:
       enabled: true
       path: /h2-console
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true # 기본은 false
+        default-page-size: 5
 

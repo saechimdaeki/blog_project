@@ -5,16 +5,13 @@ import com.saechim.saechimlog.dto.PostResponse
 import com.saechim.saechimlog.service.PostService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Pageable
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 @RestController
@@ -40,7 +37,7 @@ class PostController(
                 WebMvcLinkBuilder.methodOn(PostController::class.java).getPost(write.id!!)
             }.withRel("seeDetail"),
             linkTo<PostController> {
-                WebMvcLinkBuilder.methodOn(PostController::class.java).getList()
+                WebMvcLinkBuilder.methodOn(PostController::class.java).getList(Pageable.ofSize(4))
             }.withRel("listInfo")
         )
         return ResponseEntity.ok(entityModel)
@@ -56,9 +53,9 @@ class PostController(
     }
 
     @GetMapping("/posts")
-    fun getList() : ResponseEntity<Any>{
-        val collectionModel = CollectionModel.of(postService.getList(), linkTo<PostController> {
-            WebMvcLinkBuilder.methodOn(PostController::class.java).getList()
+    fun getList(page: Pageable): ResponseEntity<Any> {
+        val collectionModel = CollectionModel.of(postService.getList(page), linkTo<PostController> {
+            WebMvcLinkBuilder.methodOn(PostController::class.java).getList(page)
         }.withSelfRel())
         return ResponseEntity.ok(collectionModel)
     }

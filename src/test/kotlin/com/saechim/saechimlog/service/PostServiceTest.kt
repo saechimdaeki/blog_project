@@ -11,6 +11,10 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+import java.awt.print.Pageable
+import java.util.stream.IntStream
 
 @SpringBootTest
 internal class PostServiceTest(
@@ -94,13 +98,38 @@ internal class PostServiceTest(
 
         val createPost2 = Post(title = "foo2", content = "bar2")
         postRepository.saveAll(listOf(createPost,createPost2))
+
+        val of = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "id"))
         //when
-        val list = postService.getList()
+        val list = postService.getList(of)
 
         //then
         assertThat(list).isNotEmpty
 
         assertThat(list.size).isEqualTo(2)
+
+    }
+
+
+
+    @Test
+    @DisplayName("글 1페이지 조회")
+    fun `글 1페이지 조회`(){
+
+        val requestPosts = (0 until 30).map { Post(title = "saechimdaeki - $it", content = "content - $it") }
+            .toList()
+
+        postRepository.saveAll(requestPosts)
+
+        val of = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "id"))
+
+        //when
+        val list = postService.getList(of)
+
+        //then
+        assertThat(list).isNotEmpty
+
+        assertThat(list.size).isEqualTo(5)
 
     }
 }
