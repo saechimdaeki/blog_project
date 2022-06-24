@@ -1,6 +1,7 @@
 package com.saechim.saechimlog.dto
 
 import com.saechim.saechimlog.domain.Post
+import com.saechim.saechimlog.domain.PostEditor
 import javax.validation.constraints.NotBlank
 
 class PostCreate(
@@ -33,10 +34,23 @@ class PostResponse(
 
 data class PostSearch(
 
-    val page : Int = 1,
-    val size : Int = 20
-){
-    fun getOffset() : Long{
-        return ((maxOf(1,page) -1) * minOf( size,2000)).toLong()
+    val page: Int = 1,
+    val size: Int = 20,
+) {
+    fun getOffset(): Long {
+        return ((maxOf(1, page) - 1) * minOf(size, 2000)).toLong()
+    }
+}
+
+
+class PostEdit(
+    val title: String? = null,
+    val content: String? = null,
+) {
+    companion object {
+        fun toEditor(postEdit: PostEdit) = PostEditor(
+            title = postEdit.title,
+            content = postEdit.content
+        )
     }
 }

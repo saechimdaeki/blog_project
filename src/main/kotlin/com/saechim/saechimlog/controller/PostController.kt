@@ -1,6 +1,7 @@
 package com.saechim.saechimlog.controller
 
 import com.saechim.saechimlog.dto.PostCreate
+import com.saechim.saechimlog.dto.PostEdit
 import com.saechim.saechimlog.dto.PostResponse
 import com.saechim.saechimlog.dto.PostSearch
 import com.saechim.saechimlog.service.PostService
@@ -38,7 +39,10 @@ class PostController(
             }.withRel("seeDetail"),
             linkTo<PostController> {
                 WebMvcLinkBuilder.methodOn(PostController::class.java).getList(PostSearch())
-            }.withRel("listInfo")
+            }.withRel("listInfo"),
+            linkTo<PostController> {
+                WebMvcLinkBuilder.methodOn(PostController::class.java).editPost(write.id!!, PostEdit())
+            }.withRel("editInfo")
         )
         return ResponseEntity.ok(entityModel)
     }
@@ -48,7 +52,11 @@ class PostController(
     fun getPost(@PathVariable postId : Long) : ResponseEntity<Any>{
         val entityModel = EntityModel.of(postService.getPost(postId), linkTo<PostController> {
             WebMvcLinkBuilder.methodOn(PostController::class.java).getPost(postId)
-        }.withSelfRel())
+        }.withSelfRel(),
+            linkTo<PostController> {
+                WebMvcLinkBuilder.methodOn(PostController::class.java).editPost(postId, PostEdit())
+            }.withRel("editInfo")
+        )
         return ResponseEntity.ok(entityModel)
     }
 
@@ -58,6 +66,20 @@ class PostController(
             WebMvcLinkBuilder.methodOn(PostController::class.java).getList(postSearch)
         }.withSelfRel())
         return ResponseEntity.ok(collectionModel)
+    }
+
+    @PatchMapping("/posts/{postId}")
+    fun editPost(@PathVariable postId: Long, @RequestBody postEdit: PostEdit): ResponseEntity<Any> {
+        val entityModel = EntityModel.of(
+            postService.edit(postId, postEdit),
+            linkTo<PostController> {
+                WebMvcLinkBuilder.methodOn(PostController::class.java).editPost(postId, postEdit)
+            }.withSelfRel(),
+            linkTo<PostController> {
+                WebMvcLinkBuilder.methodOn(PostController::class.java).getPost(postId)
+            }.withRel("seeDetail"),
+        )
+        return ResponseEntity.ok(entityModel)
     }
 
 }

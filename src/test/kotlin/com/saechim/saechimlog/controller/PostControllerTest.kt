@@ -3,15 +3,18 @@ package com.saechim.saechimlog.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.saechim.saechimlog.domain.Post
 import com.saechim.saechimlog.dto.PostCreate
+import com.saechim.saechimlog.dto.PostEdit
 import com.saechim.saechimlog.repository.PostRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -158,4 +161,24 @@ internal class PostControllerTest(
             .andDo(print())
     }
 
+
+    @Test
+    @DisplayName("글 제목 수정")
+    fun `글 제목 수정`(){
+        //given
+
+        val createPost = Post(title = "saechim", content = "연봉 올리자")
+
+        postRepository.save(createPost)
+
+        //when
+        val postEdit = PostEdit(title = "daeki")
+
+        mockMvc.perform(patch("/posts/{postId}",createPost.id) //Patch / posts/{postId}
+            .contentType(APPLICATION_JSON).content(objectMapper.writeValueAsString(postEdit)))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.title").value("daeki"))
+            .andExpect(jsonPath("$.content").value("연봉 올리자"))
+            .andDo(print())
+    }
 }

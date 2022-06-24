@@ -1,21 +1,23 @@
 package com.saechim.saechimlog.domain
 
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.Lob
+import javax.persistence.*
 
 @Entity
 class Post(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? =null,
+    var id: Long? = null,
 
-    var title : String,
+    var title: String,
 
     @Lob
-    var content : String,
+    var content: String,
 
-)
+    ) {
+    fun editPost(postEditor: PostEditor) {
+        this.title = postEditor.title ?: this.title
+        this.content = postEditor.content ?: this.content
+    }
+
+}

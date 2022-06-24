@@ -2,20 +2,18 @@ package com.saechim.saechimlog.service
 
 import com.saechim.saechimlog.domain.Post
 import com.saechim.saechimlog.dto.PostCreate
+import com.saechim.saechimlog.dto.PostEdit
 import com.saechim.saechimlog.dto.PostSearch
 import com.saechim.saechimlog.repository.PostRepository
 import org.assertj.core.api.Assertions
-import org.assertj.core.api.Assertions.*
-import org.junit.jupiter.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
-import java.awt.print.Pageable
-import java.util.stream.IntStream
+import org.springframework.data.repository.findByIdOrNull
 
 @SpringBootTest
 internal class PostServiceTest(
@@ -133,5 +131,44 @@ internal class PostServiceTest(
     }
 
 
+    @Test
+    @DisplayName("글 제목 수정")
+    fun `글 제목 수정`() {
 
+        val createPost = Post(title = "saechim", content = "연봉 올리자")
+
+        postRepository.save(createPost)
+
+        //when
+        val postEdit = PostEdit(title = "daeki", content = "연봉 올리자")
+        postService.edit(createPost.id!!, postEdit)
+
+        postRepository.findByIdOrNull(createPost.id!!)?.let {
+            assertThat(it.title).isEqualTo("daeki")
+            assertThat(it.content).isEqualTo("연봉 올리자")
+        } ?: kotlin.run {
+            fail()
+        }
+    }
+
+
+    @Test
+    @DisplayName("글 본문 수정")
+    fun `글 본문 빈값으로 수정`() {
+
+        val createPost = Post(title = "saechim", content = "연봉 올리자")
+
+        postRepository.save(createPost)
+
+        //when
+        val postEdit = PostEdit(title = "daeki", content = null)
+        postService.edit(createPost.id!!, postEdit)
+
+        postRepository.findByIdOrNull(createPost.id!!)?.let {
+            assertThat(it.title).isEqualTo("daeki")
+            assertThat(it.content).isEqualTo("연봉 올리자")
+        } ?: kotlin.run {
+            fail()
+        }
+    }
 }
