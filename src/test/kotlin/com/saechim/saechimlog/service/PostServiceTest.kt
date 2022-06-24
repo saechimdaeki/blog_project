@@ -2,6 +2,7 @@ package com.saechim.saechimlog.service
 
 import com.saechim.saechimlog.domain.Post
 import com.saechim.saechimlog.dto.PostCreate
+import com.saechim.saechimlog.dto.PostSearch
 import com.saechim.saechimlog.repository.PostRepository
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.*
@@ -99,9 +100,8 @@ internal class PostServiceTest(
         val createPost2 = Post(title = "foo2", content = "bar2")
         postRepository.saveAll(listOf(createPost,createPost2))
 
-        val of = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "id"))
+        val list = postService.getList(PostSearch(page = 1, size = 10))
         //when
-        val list = postService.getList(of)
 
         //then
         assertThat(list).isNotEmpty
@@ -116,20 +116,22 @@ internal class PostServiceTest(
     @DisplayName("글 1페이지 조회")
     fun `글 1페이지 조회`(){
 
-        val requestPosts = (0 until 30).map { Post(title = "saechimdaeki - $it", content = "content - $it") }
+        val requestPosts = (0 until 30).map { Post(title = "saechim-$it", content = "content-$it") }
             .toList()
 
         postRepository.saveAll(requestPosts)
 
-        val of = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "id"))
-
         //when
-        val list = postService.getList(of)
+        val list = postService.getList(PostSearch(page = 1, size = 10))
 
         //then
         assertThat(list).isNotEmpty
 
-        assertThat(list.size).isEqualTo(5)
+        assertThat(list.size).isEqualTo(10)
+        assertThat("saechim-29").isEqualTo(list[0].title)
 
     }
+
+
+
 }

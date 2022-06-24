@@ -3,6 +3,7 @@ package com.saechim.saechimlog.service
 import com.saechim.saechimlog.domain.Post
 import com.saechim.saechimlog.dto.PostCreate
 import com.saechim.saechimlog.dto.PostResponse
+import com.saechim.saechimlog.dto.PostSearch
 import com.saechim.saechimlog.repository.PostRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -27,9 +28,9 @@ class PostService(
         throw IllegalArgumentException("존재하지 않는 글입니다")
     }
 
-    fun getList(page: Pageable): List<PostResponse> {
+    fun getList(postSearch: PostSearch): List<PostResponse> {
         val postResponseList = mutableListOf<PostResponse>()
-        postRepository.findAll(page).mapTo(postResponseList) { PostResponse.from(it) }
+        postRepository.getList(postSearch).mapTo(postResponseList) { PostResponse.from(it) }
         return postResponseList
     }
 }

@@ -29,3 +29,14 @@ class PostResponse(
         )
     }
 }
+
+
+data class PostSearch(
+
+    val page : Int = 1,
+    val size : Int = 20
+){
+    fun getOffset() : Long{
+        return ((maxOf(1,page) -1) * minOf( size,2000)).toLong()
+    }
+}

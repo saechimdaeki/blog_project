@@ -121,10 +121,36 @@ internal class PostControllerTest(
         *
         * Hateoas CollectionModel을 사용한다는걸 간과하지말자
         *   */
-        mockMvc.perform(get("/posts?page=1&sort=id,desc")
+        mockMvc.perform(get("/posts?page=1&size=10")
             .contentType(APPLICATION_JSON))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$._embedded.postResponseList.length()",Matchers.`is`(5)))
+            .andExpect(jsonPath("$._embedded.postResponseList.length()",Matchers.`is`(10)))
+            .andExpect(jsonPath("$._embedded.postResponseList[0].title").value("saechim-29"))
+            .andExpect(jsonPath("$._embedded.postResponseList[0].content").value("content-29"))
+            .andExpect(jsonPath("$._embedded.postResponseList[1].title").value("saechim-28"))
+            .andExpect(jsonPath("$._embedded.postResponseList[1].content").value("content-28"))
+            .andDo(print())
+    }
+
+    @Test
+    @DisplayName("페이지를 0으로 요청하면 첫 페이지를 가져온다")
+    fun `페이지 0조회 테스트`(){
+        //given
+        val requestPosts = (0 until 30).map { Post(title = "saechim-$it", content = "content-$it") }
+            .toList()
+
+        postRepository.saveAll(requestPosts)
+
+
+        //when
+        /*
+        *
+        * Hateoas CollectionModel을 사용한다는걸 간과하지말자
+        *   */
+        mockMvc.perform(get("/posts?page=0&size=10")
+            .contentType(APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$._embedded.postResponseList.length()",Matchers.`is`(10)))
             .andExpect(jsonPath("$._embedded.postResponseList[0].title").value("saechim-29"))
             .andExpect(jsonPath("$._embedded.postResponseList[0].content").value("content-29"))
             .andExpect(jsonPath("$._embedded.postResponseList[1].title").value("saechim-28"))

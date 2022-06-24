@@ -2,10 +2,10 @@ package com.saechim.saechimlog.controller
 
 import com.saechim.saechimlog.dto.PostCreate
 import com.saechim.saechimlog.dto.PostResponse
+import com.saechim.saechimlog.dto.PostSearch
 import com.saechim.saechimlog.service.PostService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.data.domain.Pageable
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder
@@ -37,7 +37,7 @@ class PostController(
                 WebMvcLinkBuilder.methodOn(PostController::class.java).getPost(write.id!!)
             }.withRel("seeDetail"),
             linkTo<PostController> {
-                WebMvcLinkBuilder.methodOn(PostController::class.java).getList(Pageable.ofSize(4))
+                WebMvcLinkBuilder.methodOn(PostController::class.java).getList(PostSearch())
             }.withRel("listInfo")
         )
         return ResponseEntity.ok(entityModel)
@@ -53,9 +53,9 @@ class PostController(
     }
 
     @GetMapping("/posts")
-    fun getList(page: Pageable): ResponseEntity<Any> {
-        val collectionModel = CollectionModel.of(postService.getList(page), linkTo<PostController> {
-            WebMvcLinkBuilder.methodOn(PostController::class.java).getList(page)
+    fun getList(@ModelAttribute postSearch: PostSearch): ResponseEntity<Any> {
+        val collectionModel = CollectionModel.of(postService.getList(postSearch), linkTo<PostController> {
+            WebMvcLinkBuilder.methodOn(PostController::class.java).getList(postSearch)
         }.withSelfRel())
         return ResponseEntity.ok(collectionModel)
     }
