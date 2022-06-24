@@ -45,4 +45,13 @@ class PostService(
             throw IllegalArgumentException("존재하지 않는 글입니다")
         }
     }
+
+    @Transactional
+    fun delete(id: Long) {
+        postRepository.findByIdOrNull(id)?.let {
+            postRepository.delete(it)
+        }?: kotlin.run {
+            throw IllegalArgumentException("존재하지 않는 글입니다")
+        }
+    }
 }

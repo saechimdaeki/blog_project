@@ -55,7 +55,11 @@ class PostController(
         }.withSelfRel(),
             linkTo<PostController> {
                 WebMvcLinkBuilder.methodOn(PostController::class.java).editPost(postId, PostEdit())
-            }.withRel("editInfo")
+            }.withRel("editInfo"),
+
+            linkTo<PostController> {
+                WebMvcLinkBuilder.methodOn(PostController::class.java).deletePost(postId)
+            }.withRel("deletePost")
         )
         return ResponseEntity.ok(entityModel)
     }
@@ -78,6 +82,21 @@ class PostController(
             linkTo<PostController> {
                 WebMvcLinkBuilder.methodOn(PostController::class.java).getPost(postId)
             }.withRel("seeDetail"),
+
+            linkTo<PostController> {
+                WebMvcLinkBuilder.methodOn(PostController::class.java).deletePost(postId)
+            }.withRel("deletePost")
+        )
+        return ResponseEntity.ok(entityModel)
+    }
+
+    @DeleteMapping("/posts/{postId}")
+    fun deletePost(@PathVariable postId: Long) : ResponseEntity<Any>{
+        val entityModel = EntityModel.of(
+            postService.delete(postId),
+            linkTo<PostController> {
+                WebMvcLinkBuilder.methodOn(PostController::class.java).deletePost(postId)
+            }.withSelfRel()
         )
         return ResponseEntity.ok(entityModel)
     }

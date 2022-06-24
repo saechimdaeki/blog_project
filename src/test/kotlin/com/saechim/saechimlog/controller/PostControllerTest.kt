@@ -181,4 +181,21 @@ internal class PostControllerTest(
             .andExpect(jsonPath("$.content").value("연봉 올리자"))
             .andDo(print())
     }
+
+
+    @Test
+    @DisplayName("게시글 삭제")
+    fun `게시글 삭제`(){
+        //given
+
+        val createPost = Post(title = "saechim", content = "연봉 올리자")
+
+        postRepository.save(createPost)
+
+
+        mockMvc.perform(delete("/posts/{postId}",createPost.id)
+            .contentType(APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andDo(print())
+    }
 }

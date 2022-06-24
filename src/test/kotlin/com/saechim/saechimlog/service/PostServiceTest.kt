@@ -7,6 +7,7 @@ import com.saechim.saechimlog.dto.PostSearch
 import com.saechim.saechimlog.repository.PostRepository
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -170,5 +171,16 @@ internal class PostServiceTest(
         } ?: kotlin.run {
             fail()
         }
+    }
+
+    @Test
+    @DisplayName("게시글 삭제")
+    fun `게시글 삭제`(){
+        val createPost = Post(title = "saechim", content = "연봉 올리자")
+
+        postRepository.save(createPost)
+
+        postService.delete(createPost.id!!)
+        assertThat(0).isEqualTo(postRepository.count())
     }
 }
