@@ -29,6 +29,8 @@ class PostController(
     @PostMapping("/posts")
     fun writePost(@RequestBody @Valid postCreate: PostCreate) : ResponseEntity<Any> {
         log.info("postCreate 값: {}",postCreate.toString())
+        postCreate.validate()
+
         val write = postService.write(postCreate)
 
         val entityModel = EntityModel.of(PostResponse.from(write), linkTo<PostController> {

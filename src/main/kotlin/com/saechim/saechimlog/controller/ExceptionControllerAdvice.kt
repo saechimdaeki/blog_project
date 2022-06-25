@@ -1,7 +1,10 @@
 package com.saechim.saechimlog.controller
 
+import com.saechim.saechimlog.exception.InvalidRequest
+import com.saechim.saechimlog.exception.SaechimLogException
 import com.saechim.saechimlog.response.ErrorResponse
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -21,4 +24,13 @@ class ExceptionControllerAdvice {
         }
         return errorResponse
     }
+
+    @ExceptionHandler(SaechimLogException::class)
+    fun saechimLogException(e: SaechimLogException) : ResponseEntity<ErrorResponse>{
+        val statusCode = e.getStatusCode()
+        return ResponseEntity.status(statusCode)
+            .body(ErrorResponse(code = statusCode.toString(), message = e.message ?: "없는 에러메시지", e.validation))
+    }
+
+
 }

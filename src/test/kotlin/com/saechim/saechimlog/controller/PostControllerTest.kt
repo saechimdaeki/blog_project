@@ -198,4 +198,39 @@ internal class PostControllerTest(
             .andExpect(status().isOk)
             .andDo(print())
     }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글 조회")
+    fun `존재하지 않는 게시글 조회`(){
+
+        mockMvc.perform(delete("/posts/{postId}",1L)
+            .contentType(APPLICATION_JSON))
+            .andExpect(status().isNotFound)
+            .andDo(print())
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글 수정")
+    fun `존재하지 않는 게시글 수정`(){
+
+        val postEdit = PostEdit(title = "daeki")
+
+
+        mockMvc.perform(patch("/posts/{postId}",1L)
+            .contentType(APPLICATION_JSON).content(objectMapper.writeValueAsString(postEdit)))
+            .andExpect(status().isNotFound)
+            .andDo(print())
+    }
+
+    @Test
+    @DisplayName("게시글 제목에 바보는 들어갈 수 없음.")
+    fun `게시글 제목에 바보는 들어갈 수 없다`() {
+
+        val requestJson = objectMapper.writeValueAsString(PostCreate(title = "제목 바보입니다", content = "내용입니다"))
+        mockMvc.perform(post("/posts")
+            .content(requestJson)
+            .contentType(APPLICATION_JSON))
+            .andExpect(status().isBadRequest)
+            .andDo(print())
+    }
 }

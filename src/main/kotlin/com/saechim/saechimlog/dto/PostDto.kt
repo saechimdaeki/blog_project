@@ -2,6 +2,7 @@ package com.saechim.saechimlog.dto
 
 import com.saechim.saechimlog.domain.Post
 import com.saechim.saechimlog.domain.PostEditor
+import com.saechim.saechimlog.exception.InvalidRequest
 import javax.validation.constraints.NotBlank
 
 class PostCreate(
@@ -16,6 +17,11 @@ class PostCreate(
         title = this.title,
         content = this.content
     )
+
+    fun validate(){
+        if(title.contains("바보"))
+             throw InvalidRequest("title","제목에 바보를 포함할 수 없습니다")
+    }
 }
 class PostResponse(
 
