@@ -4,14 +4,15 @@ import com.saechim.saechimlog.domain.Post
 import com.saechim.saechimlog.dto.PostCreate
 import com.saechim.saechimlog.dto.PostEdit
 import com.saechim.saechimlog.dto.PostSearch
+import com.saechim.saechimlog.exception.PostNotFoundException
 import com.saechim.saechimlog.repository.PostRepository
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
@@ -175,12 +176,68 @@ internal class PostServiceTest(
 
     @Test
     @DisplayName("게시글 삭제")
-    fun `게시글 삭제`(){
+    fun `게시글 삭제`() {
         val createPost = Post(title = "saechim", content = "연봉 올리자")
 
         postRepository.save(createPost)
 
         postService.delete(createPost.id!!)
         assertThat(0).isEqualTo(postRepository.count())
+    }
+
+    @Test
+    @DisplayName("글 단건 조회 실패케이스")
+    fun `글 단건 조회 실패`() {
+
+        //given
+        val createPost = Post(title = "saechim", content = "daeki")
+        postRepository.save(createPost)
+
+
+        val exception = assertThrows<PostNotFoundException> {
+            postService.getPost(createPost.id!! + 1)
+        }
+
+        assertThat(exception).isInstanceOf(PostNotFoundException::class.java)
+        assertThat(exception.message).isEqualTo("존재하지 않는 글입니다")
+        assertThat(exception).isNotNull
+    }
+
+
+    @Test
+    @DisplayName("존재하지 않는 게시글 삭제")
+    fun `존재하지 않는 게시글 삭제`() {
+        val createPost = Post(title = "saechim", content = "연봉 올리자")
+
+        postRepository.save(createPost)
+
+        val exception = assertThrows<PostNotFoundException> {
+            postService.delete(createPost.id!! + 1)
+        }
+
+
+        assertThat(exception).isInstanceOf(PostNotFoundException::class.java)
+        assertThat(exception.message).isEqualTo("존재하지 않는 글입니다")
+        assertThat(exception).isNotNull
+    }
+
+    @Test
+    @DisplayName("존재하지않는 글 제목 수정")
+    fun `존재하지 않는 글 제목 수정`() {
+
+        val createPost = Post(title = "saechim", content = "연봉 올리자")
+
+        postRepository.save(createPost)
+
+        //when
+        val postEdit = PostEdit(title = "daeki", content = "연봉 올리자")
+
+        val exception = assertThrows<PostNotFoundException> {
+            postService.edit(createPost.id!! + 1, postEdit)
+        }
+
+        assertThat(exception).isInstanceOf(PostNotFoundException::class.java)
+        assertThat(exception.message).isEqualTo("존재하지 않는 글입니다")
+        assertThat(exception).isNotNull
     }
 }

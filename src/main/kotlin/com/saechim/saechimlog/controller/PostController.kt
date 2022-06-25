@@ -42,7 +42,11 @@ class PostController(
             }.withRel("listInfo"),
             linkTo<PostController> {
                 WebMvcLinkBuilder.methodOn(PostController::class.java).editPost(write.id!!, PostEdit())
-            }.withRel("editInfo")
+            }.withRel("editInfo"),
+
+            linkTo<PostController> {
+                WebMvcLinkBuilder.methodOn(PostController::class.java).deletePost(write.id!!)
+            }.withRel("deletePost")
         )
         return ResponseEntity.ok(entityModel)
     }
