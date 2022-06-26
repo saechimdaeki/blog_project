@@ -7,20 +7,16 @@ import com.saechim.saechimlog.dto.PostEdit
 import com.saechim.saechimlog.repository.PostRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers.*
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 

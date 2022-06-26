@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.springframework.boot") version "2.7.0"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("org.asciidoctor.jvm.convert") version "3.3.2"
     kotlin("jvm") version "1.6.21"
     kotlin("plugin.spring") version "1.6.21"
     kotlin("plugin.jpa") version "1.6.21"
@@ -39,11 +40,13 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     runtimeOnly("com.h2database:h2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-
+    testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc:2.0.6.RELEASE")
     implementation("com.querydsl:querydsl-jpa:$querydslVersion")
     kapt("com.querydsl:querydsl-apt:$querydslVersion:jpa")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
 }
+
+val snippetsDir by extra { file("build/generated-snippets") }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
@@ -55,3 +58,64 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+tasks {
+    val snippetsDir = file("$buildDir/generated-snippets")
+
+    clean {
+        delete("src/main/resources/static/docs")
+    }
+
+    test {
+        useJUnitPlatform()
+        systemProperty("org.springframework.restdocs.outputDir", snippetsDir)
+        outputs.dir(snippetsDir)
+    }
+
+    build {
+        dependsOn("copyDocument")
+    }
+
+    asciidoctor {
+        dependsOn(test)
+
+        attributes(
+            mapOf("snippets" to snippetsDir)
+        )
+        inputs.dir(snippetsDir)
+
+        doFirst {
+            delete("src/main/resources/static/docs")
+        }
+    }
+
+    register<Copy>("copyDocument") {
+        dependsOn(asciidoctor)
+        doFirst{
+            clean
+        }
+        destinationDir = file(".")
+        from(asciidoctor.get().outputDir) {
+            into("src/main/resources/static/docs")
+        }
+    }
+
+    bootJar {
+
+        doFirst{
+            clean
+        }
+
+        dependsOn(asciidoctor)
+
+        from(asciidoctor.get().outputDir) {
+            into("BOOT-INF/classes/static/docs")
+        }
+    }
+}
+
+
+
+
+
+
