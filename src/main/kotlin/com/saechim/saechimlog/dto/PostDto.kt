@@ -22,6 +22,7 @@ class PostCreate(
         if(title.contains("바보"))
              throw InvalidRequest("title","제목에 바보를 포함할 수 없습니다")
     }
+
 }
 class PostResponse(
 
