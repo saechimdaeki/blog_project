@@ -31,8 +31,47 @@ onMounted(() => {
 </script>
 
 <template>
-  <h2>{{post.title}}</h2>
-  <div>{{post.content}}</div>
+  <el-row>
+    <el-col>
+      <h2 class="title">{{ post.title }}</h2>
+    </el-col>
+  </el-row>
 
-  <el-button type="warning" @click="moveToEdit()">수정</el-button>
+
+  <el-row>
+    <el-col>
+      <div class="content">{{ post.content }}</div>
+    </el-col>
+  </el-row>
+
+  <el-row>
+    <el-clo>
+      <div class="d-flex justify-content-end">
+        <el-button type="warning" @click="moveToEdit()">수정</el-button>
+      </div>
+    </el-clo>
+  </el-row>
 </template>
+
+
+<style scoped lang="scss">
+.title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #5BB2FF;
+}
+
+.content{
+  font-size: 0.95rem;
+  color: #5d5d5d;
+  margin-top: 8px;
+  margin-bottom: 10px;
+  white-space: break-spaces;
+}
+
+.sub {
+  margin-top: 4px;
+  font-size: 0.8rem;
+}
+
+</style>

@@ -25,8 +25,10 @@ const write = function (){
   <div class="mt-2">
     <el-input v-model="content" type="textarea" rows="15"></el-input>
   </div>
-  <div>
+  <div class="mt-2">
+    <div class="d-flex justify-content-end">
     <el-button type="primary" @click="write()">글 작성 완료</el-button>
+    </div>
   </div>
 </template>
 
